@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { NConfigProvider, darkTheme, NMessageProvider } from "naive-ui";
+import { NConfigProvider, darkTheme, NMessageProvider, NIcon } from "naive-ui";
 import {
   HomeOutline,
   TrendingUpOutline,
@@ -12,16 +12,64 @@ import {
 const router = useRouter();
 const route = useRoute();
 
-const isDark = ref(false);
-const theme = computed(() => (isDark.value ? darkTheme : null));
+// 主题管理
+type ThemeMode = "light" | "dark" | "auto";
+const themeMode = ref<ThemeMode>("light");
+const systemDark = ref(false);
+
+// 计算当前主题
+const theme = computed(() => {
+  if (themeMode.value === "dark") return darkTheme;
+  if (themeMode.value === "auto") return systemDark.value ? darkTheme : null;
+  return null;
+});
+
+// 检测系统主题
+const checkSystemTheme = () => {
+  systemDark.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+};
+
+// 监听系统主题变化
+const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+mediaQuery.addListener(checkSystemTheme);
+
+// 从本地存储加载主题设置
+const loadThemeSettings = () => {
+  const saved = localStorage.getItem("theme-mode");
+  if (saved && ["light", "dark", "auto"].includes(saved)) {
+    themeMode.value = saved as ThemeMode;
+  }
+};
+
+// 保存主题设置
+const saveThemeSettings = () => {
+  localStorage.setItem("theme-mode", themeMode.value);
+};
+
+// 切换主题的方法（供子组件调用）
+const switchTheme = (mode: ThemeMode) => {
+  themeMode.value = mode;
+  saveThemeSettings();
+};
+
+// 暴露给全局使用
+(window as any).__themeController = {
+  themeMode,
+  switchTheme,
+};
+
+onMounted(() => {
+  checkSystemTheme();
+  loadThemeSettings();
+});
 
 const activeTab = computed(() => route.name as string);
 
 const tabs = [
   { name: "Home", label: "首页", icon: HomeOutline },
-  { name: "Goals", label: "目标", icon: TrendingUpOutline },
+  { name: "Goals", label: "计划", icon: TrendingUpOutline },
   { name: "Records", label: "记录", icon: CalendarOutline },
-  { name: "Achievements", label: "成就", icon: TrophyOutline },
+  { name: "Achievements", label: "我的", icon: TrophyOutline },
 ];
 
 const navigateTo = (routeName: string) => {
@@ -48,7 +96,9 @@ const navigateTo = (routeName: string) => {
             @click="navigateTo(tab.name)"
           >
             <div class="nav-icon">
-              <component :is="tab.icon" />
+              <n-icon>
+                <component :is="tab.icon" />
+              </n-icon>
             </div>
             <div class="nav-label">{{ tab.label }}</div>
           </div>
@@ -63,7 +113,7 @@ const navigateTo = (routeName: string) => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background-color: var(--n-body-color);
 }
 
 .main-content {
@@ -75,8 +125,8 @@ const navigateTo = (routeName: string) => {
 .bottom-navigation {
   display: flex;
   height: 60px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+  background-color: var(--n-card-color);
+  border-top: 1px solid var(--n-border-color);
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -89,18 +139,19 @@ const navigateTo = (routeName: string) => {
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 8px 4px;
+  color: var(--n-text-color);
 }
 
 .nav-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--n-button-color-hover);
 }
 
 .nav-item.active {
-  color: #18a058;
+  color: var(--n-primary-color);
 }
 
 .nav-item.active .nav-icon {
-  color: #18a058;
+  color: var(--n-primary-color);
 }
 
 .nav-icon {
@@ -116,15 +167,7 @@ const navigateTo = (routeName: string) => {
   line-height: 1;
 }
 
-/* 深色主题适配 */
-.dark .bottom-navigation {
-  background-color: #1f1f1f;
-  border-top-color: #333;
-}
-
-.dark .nav-item:hover {
-  background-color: #333;
-}
+/* 移除深色主题的硬编码样式，让主题系统接管 */
 
 /* 确保在安卓设备上的适配 */
 @media (max-width: 768px) {
@@ -153,7 +196,7 @@ const navigateTo = (routeName: string) => {
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  background-color: #f5f5f5;
+  background-color: var(--n-body-color);
   overflow: hidden;
 }
 

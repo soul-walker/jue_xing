@@ -74,26 +74,28 @@
         </div>
 
         <!-- 日历网格 -->
-        <div class="calendar-grid">
-          <div
-            v-for="date in calendarDates"
-            :key="date.key"
-            class="calendar-date"
-            :class="{
-              'other-month': !date.currentMonth,
-              'has-record': date.hasRecord,
-              today: date.isToday,
-            }"
-            @click="selectDate(date)"
-          >
-            <div class="date-number">{{ date.date }}</div>
-            <div v-if="date.hasRecord" class="record-indicator">
-              <div
-                v-for="record in date.records"
-                :key="record.id"
-                class="record-dot"
-                :style="{ backgroundColor: getTypeColor(record.type) }"
-              ></div>
+        <div class="calendar-container">
+          <div class="calendar-grid">
+            <div
+              v-for="date in calendarDates"
+              :key="date.key"
+              class="calendar-date"
+              :class="{
+                'other-month': !date.currentMonth,
+                'has-record': date.hasRecord,
+                today: date.isToday,
+              }"
+              @click="selectDate(date)"
+            >
+              <div class="date-number">{{ date.date }}</div>
+              <div v-if="date.hasRecord" class="record-indicator">
+                <div
+                  v-for="record in date.records"
+                  :key="record.id"
+                  class="record-dot"
+                  :style="{ backgroundColor: getTypeColor(record.type) }"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
@@ -121,7 +123,7 @@
                   class="type-indicator"
                   :style="{ backgroundColor: getTypeColor(record.type) }"
                 ></div>
-                <n-space vertical size="0">
+                <n-space vertical size="small">
                   <n-text strong>{{ record.type }}</n-text>
                   <n-text depth="3" style="font-size: 12px">
                     {{ record.duration }}分钟 | {{ record.time }}
@@ -543,17 +545,24 @@ const saveRecord = () => {
   color: #666;
 }
 
+.calendar-container {
+  width: 100%;
+  overflow: hidden;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .calendar-date {
   aspect-ratio: 1;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 6px;
+  padding: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -561,6 +570,8 @@ const saveRecord = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 0;
+  font-size: 12px;
 }
 
 .calendar-date:hover {
@@ -590,8 +601,9 @@ const saveRecord = () => {
 }
 
 .date-number {
-  font-size: 14px;
-  margin-bottom: 4px;
+  font-size: 12px;
+  margin-bottom: 2px;
+  line-height: 1;
 }
 
 .record-indicator {
@@ -602,8 +614,8 @@ const saveRecord = () => {
 }
 
 .record-dot {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
 }
 
@@ -618,5 +630,32 @@ const saveRecord = () => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .calendar-date {
+    padding: 2px;
+    font-size: 11px;
+  }
+
+  .date-number {
+    font-size: 11px;
+    margin-bottom: 1px;
+  }
+
+  .record-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .week-day {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+
+  .calendar-grid {
+    gap: 2px;
+  }
 }
 </style>

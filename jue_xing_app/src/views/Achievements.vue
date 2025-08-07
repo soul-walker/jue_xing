@@ -2,25 +2,15 @@
   <div class="achievements-container">
     <!-- 页面标题 -->
     <div class="page-header">
-      <n-text strong style="font-size: 20px; color: white">我的成就</n-text>
+      <n-text strong style="font-size: 20px">我的成就</n-text>
       <n-space>
-        <n-button
-          type="primary"
-          size="small"
-          @click="viewReports"
-          style="background: rgba(255, 255, 255, 0.2); border: none"
-        >
+        <n-button type="primary" size="small" @click="viewReports">
           <template #icon>
             <n-icon><BarChartOutline /></n-icon>
           </template>
           报告
         </n-button>
-        <n-button
-          type="primary"
-          size="small"
-          @click="showSettings = true"
-          style="background: rgba(255, 255, 255, 0.2); border: none"
-        >
+        <n-button type="primary" size="small" @click="showSettings = true">
           <template #icon>
             <n-icon><SettingsOutline /></n-icon>
           </template>
@@ -75,7 +65,7 @@
           >
             <n-space align="center">
               <div class="achievement-icon earned">
-                <n-icon size="24" color="#f0a020">
+                <n-icon size="24">
                   <TrophyOutline />
                 </n-icon>
               </div>
@@ -120,7 +110,11 @@
             >
               <n-icon
                 size="24"
-                :color="achievement.earned ? '#f0a020' : '#ccc'"
+                :style="{
+                  color: achievement.earned
+                    ? 'var(--n-warning-color)'
+                    : 'var(--n-text-color-disabled)',
+                }"
               >
                 <component :is="achievement.icon" />
               </n-icon>
@@ -215,7 +209,7 @@
           <n-card title="系统设置" :bordered="false" embedded>
             <n-space vertical size="medium">
               <n-form-item label="主题模式">
-                <n-radio-group v-model:value="settings.theme">
+                <n-radio-group v-model:value="currentThemeMode">
                   <n-radio value="light">浅色</n-radio>
                   <n-radio value="dark">深色</n-radio>
                   <n-radio value="auto">跟随系统</n-radio>
@@ -243,7 +237,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import {
   NCard,
@@ -290,6 +284,14 @@ interface Achievement {
 const message = useMessage();
 const router = useRouter();
 
+// 主题控制
+const currentThemeMode = ref("light");
+
+// 初始化时获取主题控制器
+const getThemeController = () => {
+  return (window as any).__themeController;
+};
+
 // 设置相关
 const showSettings = ref(false);
 const settings = ref({
@@ -299,7 +301,22 @@ const settings = ref({
   practiceReminders: true,
   reminderTime: null,
   goalReminders: true,
-  theme: "auto",
+});
+
+// 监听主题模式变化
+watch(currentThemeMode, (newMode) => {
+  const controller = getThemeController();
+  if (controller) {
+    controller.switchTheme(newMode);
+  }
+});
+
+// 初始化主题模式
+onMounted(() => {
+  const controller = getThemeController();
+  if (controller) {
+    currentThemeMode.value = controller.themeMode.value;
+  }
 });
 
 // AI 模型选项
@@ -445,7 +462,7 @@ const viewReports = () => {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  color: white;
+  color: var(--n-text-color);
 }
 
 .overview-card,
@@ -467,22 +484,19 @@ const viewReports = () => {
   align-items: flex-start;
   padding: 16px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--n-card-color);
+  border: 1px solid var(--n-border-color);
   transition: all 0.2s ease;
 }
 
 .achievement-item.earned {
-  background: rgba(240, 160, 32, 0.1);
-  border-left: 4px solid #f0a020;
+  background: var(--n-success-color-suppl);
+  border: 1px solid var(--n-success-color);
 }
 
 .achievement-item.recent {
-  background: linear-gradient(
-    90deg,
-    rgba(240, 160, 32, 0.1) 0%,
-    rgba(240, 160, 32, 0.05) 100%
-  );
-  border-left: 4px solid #f0a020;
+  background: var(--n-warning-color-suppl);
+  border: 1px solid var(--n-warning-color);
 }
 
 .achievement-icon {
@@ -492,12 +506,13 @@ const viewReports = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--n-action-color);
   margin-right: 12px;
   flex-shrink: 0;
 }
 
 .achievement-icon.earned {
-  background: rgba(240, 160, 32, 0.2);
+  background: var(--n-warning-color-suppl);
+  color: var(--n-warning-color);
 }
 </style>

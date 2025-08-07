@@ -204,19 +204,19 @@ const ratingDistribution = ref([
 const suggestions = ref([
   {
     type: "consistency",
-    level: "success",
+    level: "success" as "success" | "info" | "warning" | "error" | "default",
     title: "坚持度良好",
     content: "您已经连续修行7天，继续保持这个好习惯！",
   },
   {
     type: "diversity",
-    level: "info",
+    level: "info" as "success" | "info" | "warning" | "error" | "default",
     title: "类型建议",
     content: "建议增加运动类型的修行，平衡身心发展。",
   },
   {
     type: "duration",
-    level: "warning",
+    level: "warning" as "success" | "info" | "warning" | "error" | "default",
     title: "时长提醒",
     content: "可以适当增加单次修行时长，提升修行效果。",
   },

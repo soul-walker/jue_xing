@@ -12,6 +12,21 @@
       </n-space>
     </div>
 
+    <!-- 今日名言 -->
+    <n-card class="quote-card" :bordered="false">
+      <n-space vertical size="small">
+        <n-icon size="16" color="#f0a020">
+          <TimeOutline />
+        </n-icon>
+        <n-text style="font-style: italic; font-size: 14px; line-height: 1.6">
+          "为学日益，为道日损，损之又损，以至于无为。无为而无不为。"
+        </n-text>
+        <n-text depth="3" style="font-size: 12px; text-align: right">
+          — 道德经
+        </n-text>
+      </n-space>
+    </n-card>
+
     <!-- 今日修行计划 -->
     <n-card class="plan-card" :bordered="false">
       <n-space vertical size="medium">
@@ -159,21 +174,6 @@
           <n-text strong style="font-size: 14px">下次提醒</n-text>
           <n-text depth="3" style="font-size: 12px">{{ nextReminder }}</n-text>
         </n-space>
-      </n-space>
-    </n-card>
-
-    <!-- 今日名言 -->
-    <n-card class="quote-card" :bordered="false">
-      <n-space vertical size="small">
-        <n-icon size="16" color="#f0a020">
-          <TimeOutline />
-        </n-icon>
-        <n-text style="font-style: italic; font-size: 14px; line-height: 1.6">
-          "身安不如心安，屋宽不如心宽。"
-        </n-text>
-        <n-text depth="3" style="font-size: 12px; text-align: right">
-          — 星云大师
-        </n-text>
       </n-space>
     </n-card>
 
