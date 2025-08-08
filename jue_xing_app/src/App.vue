@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, markRaw } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { NConfigProvider, darkTheme, NMessageProvider, NIcon } from "naive-ui";
+import {
+  NConfigProvider,
+  darkTheme,
+  NMessageProvider,
+  NDialogProvider,
+  NIcon,
+} from "naive-ui";
 import {
   HomeOutline,
-  TrendingUpOutline,
+  LibraryOutline,
   CalendarOutline,
-  TrophyOutline,
+  PersonOutline,
 } from "@vicons/ionicons5";
 
 const router = useRouter();
@@ -63,13 +69,15 @@ onMounted(() => {
   loadThemeSettings();
 });
 
-const activeTab = computed(() => route.name as string);
+const activeTab = computed(() => {
+  return route.name as string;
+});
 
 const tabs = [
-  { name: "Home", label: "首页", icon: HomeOutline },
-  { name: "Goals", label: "计划", icon: TrendingUpOutline },
-  { name: "Records", label: "记录", icon: CalendarOutline },
-  { name: "Achievements", label: "我的", icon: TrophyOutline },
+  { name: "Home", label: "首页", icon: markRaw(HomeOutline) },
+  { name: "Practice", label: "计划", icon: markRaw(LibraryOutline) },
+  { name: "Records", label: "记录", icon: markRaw(CalendarOutline) },
+  { name: "Profile", label: "我的", icon: markRaw(PersonOutline) },
 ];
 
 const navigateTo = (routeName: string) => {
@@ -80,30 +88,32 @@ const navigateTo = (routeName: string) => {
 <template>
   <n-config-provider :theme="theme">
     <n-message-provider>
-      <div class="app-container">
-        <!-- 主要内容区域 -->
-        <div class="main-content">
-          <router-view />
-        </div>
+      <n-dialog-provider>
+        <div class="app-container">
+          <!-- 主要内容区域 -->
+          <div class="main-content">
+            <router-view />
+          </div>
 
-        <!-- 底部导航栏 -->
-        <div class="bottom-navigation">
-          <div
-            v-for="tab in tabs"
-            :key="tab.name"
-            class="nav-item"
-            :class="{ active: activeTab === tab.name }"
-            @click="navigateTo(tab.name)"
-          >
-            <div class="nav-icon">
-              <n-icon>
-                <component :is="tab.icon" />
-              </n-icon>
+          <!-- 底部导航栏 -->
+          <div class="bottom-navigation">
+            <div
+              v-for="tab in tabs"
+              :key="tab.name"
+              class="nav-item"
+              :class="{ active: activeTab === tab.name }"
+              @click="navigateTo(tab.name)"
+            >
+              <div class="nav-icon">
+                <n-icon>
+                  <component :is="tab.icon" />
+                </n-icon>
+              </div>
+              <div class="nav-label">{{ tab.label }}</div>
             </div>
-            <div class="nav-label">{{ tab.label }}</div>
           </div>
         </div>
-      </div>
+      </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
 </template>
@@ -142,22 +152,33 @@ const navigateTo = (routeName: string) => {
   color: var(--n-text-color);
 }
 
-.nav-item:hover {
+.nav-item:hover:not(.active) {
   background-color: var(--n-button-color-hover);
+  border-radius: 8px;
+  transform: translateY(-0.5px);
 }
 
 .nav-item.active {
   color: var(--n-primary-color);
+  font-weight: 800;
 }
 
 .nav-item.active .nav-icon {
   color: var(--n-primary-color);
+  transform: scale(1.5);
+  font-weight: 700;
+}
+
+.nav-item.active .nav-label {
+  color: var(--n-primary-color);
+  font-weight: 700;
+  transform: scale(1.5);
 }
 
 .nav-icon {
   font-size: 20px;
   margin-bottom: 2px;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .nav-label {
@@ -165,6 +186,7 @@ const navigateTo = (routeName: string) => {
   font-weight: 500;
   text-align: center;
   line-height: 1;
+  transition: all 0.3s ease;
 }
 
 /* 移除深色主题的硬编码样式，让主题系统接管 */
@@ -181,6 +203,14 @@ const navigateTo = (routeName: string) => {
 
   .bottom-navigation {
     height: 56px;
+  }
+
+  .nav-item.active .nav-icon {
+    transform: scale(1.25);
+  }
+
+  .nav-item.active .nav-label {
+    transform: scale(1.05);
   }
 }
 </style>

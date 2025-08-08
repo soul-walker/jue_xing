@@ -237,7 +237,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, markRaw } from "vue";
 import { useRouter } from "vue-router";
 import {
   NCard,
@@ -344,7 +344,7 @@ const achievements = ref<Achievement[]>([
     name: "初心者",
     description: "完成第一次修行",
     category: "special",
-    icon: StarOutline,
+    icon: markRaw(StarOutline),
     earned: true,
     earnedAt: "2025-07-15",
   },
@@ -353,7 +353,7 @@ const achievements = ref<Achievement[]>([
     name: "坚持不懈",
     description: "连续修行7天",
     category: "consistency",
-    icon: FlameOutline,
+    icon: markRaw(FlameOutline),
     earned: true,
     earnedAt: "2025-07-22",
   },
@@ -362,7 +362,7 @@ const achievements = ref<Achievement[]>([
     name: "时间大师",
     description: "累计修行100小时",
     category: "duration",
-    icon: CalendarOutline,
+    icon: markRaw(CalendarOutline),
     earned: false,
     progress: 65,
   },
@@ -371,7 +371,7 @@ const achievements = ref<Achievement[]>([
     name: "完美主义者",
     description: "连续10次5星评分",
     category: "quality",
-    icon: TrophyOutline,
+    icon: markRaw(TrophyOutline),
     earned: false,
     progress: 30,
   },
@@ -380,7 +380,7 @@ const achievements = ref<Achievement[]>([
     name: "月度冠军",
     description: "单月修行30天",
     category: "consistency",
-    icon: MedalOutline,
+    icon: markRaw(MedalOutline),
     earned: false,
     progress: 80,
   },
@@ -389,7 +389,7 @@ const achievements = ref<Achievement[]>([
     name: "修行达人",
     description: "掌握5种修行类型",
     category: "special",
-    icon: RibbonOutline,
+    icon: markRaw(RibbonOutline),
     earned: true,
     earnedAt: "2025-08-01",
   },

@@ -1,6 +1,6 @@
 <template>
   <PageLayout
-    title="创建目标"
+    title="编辑目标"
     :show-back="true"
     :show-action="true"
     action-icon="check"
@@ -243,7 +243,7 @@
           :disabled="!isFormValid"
           block
         >
-          创建目标
+          保存修改
         </n-button>
 
         <n-button size="large" @click="goBack" block> 取消 </n-button>
@@ -253,8 +253,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import {
   useMessage,
   NForm,
@@ -290,9 +290,13 @@ interface GoalFormData {
 }
 
 const router = useRouter();
+const route = useRoute();
 const message = useMessage();
 const formRef = ref<any>(null);
 const saving = ref(false);
+
+// 获取目标ID
+const goalId = computed(() => route.params.id as string);
 
 // 表单数据
 const formData = ref<GoalFormData>({
@@ -388,10 +392,57 @@ const calculateDays = () => {
   return diffDays;
 };
 
+// 加载目标数据
+const loadGoalData = async () => {
+  try {
+    // 这里应该从API获取目标数据，目前用模拟数据
+    // 根据goalId获取目标详情
+
+    // 模拟数据
+    const mockGoal = {
+      id: goalId.value,
+      title: "保持身体健康",
+      description: "通过日常运动保持身体力量、协调性和柔韧性",
+      goalType: "long-term" as const,
+      hasDeadline: true,
+      startDate: Date.now(),
+      endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
+      plans: [
+        {
+          name: "每日深蹲",
+          description: "每天完成深蹲运动，增强腿部力量",
+          targetAmount: 100,
+          unit: "个",
+        },
+        {
+          name: "晨间冥想",
+          description: "每天早晨进行冥想练习，平静心灵",
+          targetAmount: 20,
+          unit: "分钟",
+        },
+      ],
+    };
+
+    // 填充表单数据
+    formData.value = {
+      title: mockGoal.title,
+      description: mockGoal.description,
+      goalType: mockGoal.goalType,
+      hasDeadline: mockGoal.hasDeadline,
+      startDate: mockGoal.startDate,
+      endDate: mockGoal.endDate,
+      plans: mockGoal.plans,
+    };
+  } catch (error) {
+    message.error("加载目标数据失败");
+    router.back();
+  }
+};
+
 // 返回上一页
 const goBack = () => {
-  // 创建目标主要从计划页面进入，直接返回计划页面
-  router.push({ name: "Practice" });
+  // 编辑目标通常从目标详情页进入，返回到目标详情页
+  router.push({ name: "GoalDetail", params: { id: goalId.value } });
 };
 
 // 保存目标
@@ -405,14 +456,18 @@ const saveGoal = async () => {
     // 模拟保存过程
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    message.success("目标创建成功！");
-    router.push({ name: "Practice" });
+    message.success("目标修改成功！");
+    router.push({ name: "GoalDetail", params: { id: goalId.value } });
   } catch (error) {
     message.error("请检查表单信息");
   } finally {
     saving.value = false;
   }
 };
+
+onMounted(() => {
+  loadGoalData();
+});
 </script>
 
 <style scoped>

@@ -1,30 +1,16 @@
 <template>
-  <div class="goal-detail">
-    <!-- 顶部导航栏 -->
-    <n-card :bordered="false" class="header-card">
-      <div class="header-content">
-        <n-button text @click="goBack" class="back-button">
-          <template #icon>
-            <n-icon size="20">
-              <ArrowBack />
-            </n-icon>
-          </template>
-        </n-button>
-        <span class="page-title">目标详情</span>
-        <n-button text @click="editGoal" class="edit-button">
-          <template #icon>
-            <n-icon size="20">
-              <CreateOutline />
-            </n-icon>
-          </template>
-        </n-button>
-      </div>
-    </n-card>
-
-    <div class="detail-content">
-      <!-- 目标基本信息 -->
-      <n-card class="goal-info-card" :bordered="false">
-        <div class="goal-header">
+  <PageLayout
+    title="目标详情"
+    :show-back="true"
+    :show-action="true"
+    action-icon="create"
+    @back="goBack"
+    @action="editGoal"
+  >
+    <!-- 目标基本信息 -->
+    <AppCard title="目标信息" icon="CalendarOutline" variant="primary">
+      <div class="goal-header">
+        <div class="goal-title-section">
           <h2 class="goal-title">{{ goal.title }}</h2>
           <n-tag
             :type="getStatusType(goal.status)"
@@ -37,7 +23,7 @@
 
         <div class="goal-meta">
           <div class="meta-item">
-            <n-icon size="16" color="#666">
+            <n-icon size="16" color="var(--app-text-secondary)">
               <CalendarOutline />
             </n-icon>
             <span
@@ -46,7 +32,7 @@
             >
           </div>
           <div class="meta-item">
-            <n-icon size="16" color="#666">
+            <n-icon size="16" color="var(--app-text-secondary)">
               <TimeOutline />
             </n-icon>
             <span>{{ getDaysRemaining(goal.endDate) }}</span>
@@ -54,106 +40,106 @@
         </div>
 
         <p class="goal-description">{{ goal.description }}</p>
-      </n-card>
+      </div>
+    </AppCard>
 
-      <!-- 进度统计 -->
-      <n-card class="progress-card" :bordered="false">
-        <h3 class="card-title">完成进度</h3>
-
-        <div class="progress-stats">
-          <div class="stat-item">
-            <span class="stat-number">{{ goal.completedDays }}</span>
-            <span class="stat-label">已完成天数</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">{{ goal.totalDays }}</span>
-            <span class="stat-label">总天数</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number"
-              >{{
-                Math.round((goal.completedDays / goal.totalDays) * 100)
-              }}%</span
-            >
-            <span class="stat-label">完成率</span>
-          </div>
+    <!-- 进度统计 -->
+    <AppCard title="完成进度" icon="TrendingUpOutline" variant="accent">
+      <div class="progress-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ goal.completedDays }}</span>
+          <span class="stat-label">已完成天数</span>
         </div>
-
-        <n-progress
-          type="line"
-          :percentage="Math.round((goal.completedDays / goal.totalDays) * 100)"
-          :show-indicator="false"
-          :height="8"
-          :border-radius="4"
-          color="#18a058"
-          class="progress-bar"
-        />
-      </n-card>
-
-      <!-- 连续天数统计 -->
-      <n-card class="streak-card" :bordered="false">
-        <h3 class="card-title">连续记录</h3>
-
-        <div class="streak-stats">
-          <div class="streak-item">
-            <n-icon size="24" color="#f0a020">
-              <FlameOutline />
-            </n-icon>
-            <div class="streak-info">
-              <span class="streak-number">{{ goal.currentStreak }}</span>
-              <span class="streak-label">当前连续</span>
-            </div>
-          </div>
-          <div class="streak-item">
-            <n-icon size="24" color="#2080f0">
-              <TrophyOutline />
-            </n-icon>
-            <div class="streak-info">
-              <span class="streak-number">{{ goal.longestStreak }}</span>
-              <span class="streak-label">最长连续</span>
-            </div>
-          </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ goal.totalDays }}</span>
+          <span class="stat-label">总天数</span>
         </div>
-      </n-card>
-
-      <!-- 日历视图 -->
-      <n-card class="calendar-card" :bordered="false">
-        <h3 class="card-title">完成日历</h3>
-
-        <div class="calendar-grid">
-          <div
-            v-for="date in calendarDates"
-            :key="date.date"
-            class="calendar-day"
-            :class="{
-              completed: date.completed,
-              today: date.isToday,
-              future: date.isFuture,
-              'other-month': date.isOtherMonth,
-            }"
-            @click="toggleDate(date)"
+        <div class="stat-item">
+          <span class="stat-number"
+            >{{
+              Math.round((goal.completedDays / goal.totalDays) * 100)
+            }}%</span
           >
-            {{ date.day }}
+          <span class="stat-label">完成率</span>
+        </div>
+      </div>
+
+      <n-progress
+        type="line"
+        :percentage="Math.round((goal.completedDays / goal.totalDays) * 100)"
+        :show-indicator="false"
+        :height="8"
+        :border-radius="4"
+        color="var(--app-color-success)"
+        class="progress-bar"
+      />
+    </AppCard>
+
+    <!-- 连续天数统计 -->
+    <AppCard
+      title="连续记录"
+      icon="FlameOutline"
+      icon-color="var(--app-color-warning)"
+    >
+      <div class="streak-stats">
+        <div class="streak-item">
+          <n-icon size="24" color="var(--app-color-warning)">
+            <FlameOutline />
+          </n-icon>
+          <div class="streak-info">
+            <span class="streak-number">{{ goal.currentStreak }}</span>
+            <span class="streak-label">当前连续</span>
           </div>
         </div>
-
-        <div class="calendar-legend">
-          <div class="legend-item">
-            <div class="legend-dot completed"></div>
-            <span>已完成</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot today"></div>
-            <span>今天</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot"></div>
-            <span>未完成</span>
+        <div class="streak-item">
+          <n-icon size="24" color="var(--app-color-secondary)">
+            <TrophyOutline />
+          </n-icon>
+          <div class="streak-info">
+            <span class="streak-number">{{ goal.longestStreak }}</span>
+            <span class="streak-label">最长连续</span>
           </div>
         </div>
-      </n-card>
+      </div>
+    </AppCard>
 
-      <!-- 操作按钮 -->
+    <!-- 日历视图 -->
+    <AppCard title="完成日历" icon="CalendarOutline">
+      <div class="calendar-grid">
+        <div
+          v-for="date in calendarDates"
+          :key="date.date"
+          class="calendar-day"
+          :class="{
+            completed: date.completed,
+            today: date.isToday,
+            future: date.isFuture,
+            'other-month': date.isOtherMonth,
+          }"
+          @click="toggleDate(date)"
+        >
+          {{ date.day }}
+        </div>
+      </div>
+
+      <div class="calendar-legend">
+        <div class="legend-item">
+          <div class="legend-dot completed"></div>
+          <span>已完成</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot today"></div>
+          <span>今天</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot"></div>
+          <span>未完成</span>
+        </div>
+      </div>
+    </AppCard>
+
+    <!-- 操作按钮 -->
+    <AppCard>
       <div class="action-buttons">
         <n-button
           type="primary"
@@ -179,22 +165,29 @@
           </n-button>
         </div>
       </div>
-    </div>
-  </div>
+    </AppCard>
+  </PageLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useMessage, useDialog } from "naive-ui";
 import {
-  ArrowBack,
-  CreateOutline,
+  useMessage,
+  useDialog,
+  NTag,
+  NIcon,
+  NProgress,
+  NButton,
+} from "naive-ui";
+import {
   CalendarOutline,
   TimeOutline,
   FlameOutline,
   TrophyOutline,
 } from "@vicons/ionicons5";
+import PageLayout from "../components/PageLayout.vue";
+import AppCard from "../components/AppCard.vue";
 
 interface Goal {
   id: string;
@@ -363,12 +356,13 @@ const getDaysRemaining = (endDate: string) => {
 
 // 操作方法
 const goBack = () => {
-  router.back();
+  // 直接返回到计划页面，因为目标详情主要从计划页进入
+  router.push({ name: "Practice" });
 };
 
 const editGoal = () => {
   // 跳转到编辑页面
-  router.push(`/goals/${goal.value.id}/edit`);
+  router.push({ name: "EditGoal", params: { id: goal.value.id } });
 };
 
 const toggleDate = (date: CalendarDate) => {
@@ -433,67 +427,33 @@ const deleteGoal = () => {
     negativeText: "取消",
     onPositiveClick: () => {
       message.success("目标已删除");
-      router.push("/goals");
+      router.push({ name: "Practice" });
     },
   });
 };
 </script>
 
 <style scoped>
-.goal-detail {
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-.header-card {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-.page-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-
-.back-button,
-.edit-button {
-  padding: 8px;
-}
-
-.detail-content {
-  padding: 16px;
-  padding-bottom: 100px;
-}
-
-/* 目标信息卡片 */
-.goal-info-card {
-  margin-bottom: 16px;
-}
-
+/* 目标信息样式 */
 .goal-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-spacing-md);
+}
+
+.goal-title-section {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 12px;
+  gap: var(--app-spacing-sm);
 }
 
 .goal-title {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--app-text-primary);
   margin: 0;
   flex: 1;
-  margin-right: 12px;
 }
 
 .status-tag {
@@ -503,43 +463,29 @@ const deleteGoal = () => {
 .goal-meta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--app-spacing-sm);
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--app-spacing-sm);
   font-size: 14px;
-  color: #666;
+  color: var(--app-text-secondary);
 }
 
 .goal-description {
   font-size: 14px;
   line-height: 1.6;
-  color: #333;
+  color: var(--app-text-primary);
   margin: 0;
 }
 
-/* 进度卡片 */
-.progress-card,
-.streak-card,
-.calendar-card {
-  margin-bottom: 16px;
-}
-
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 16px 0;
-}
-
+/* 进度统计样式 */
 .progress-stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: var(--app-spacing-md);
 }
 
 .stat-item {
@@ -551,28 +497,28 @@ const deleteGoal = () => {
   display: block;
   font-size: 24px;
   font-weight: 600;
-  color: #18a058;
+  color: var(--app-color-success);
 }
 
 .stat-label {
   font-size: 12px;
-  color: #666;
+  color: var(--app-text-secondary);
 }
 
 .progress-bar {
-  margin-top: 8px;
+  margin-top: var(--app-spacing-sm);
 }
 
-/* 连续天数卡片 */
+/* 连续天数样式 */
 .streak-stats {
   display: flex;
-  gap: 24px;
+  gap: var(--app-spacing-lg);
 }
 
 .streak-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--app-spacing-sm);
   flex: 1;
 }
 
@@ -584,20 +530,20 @@ const deleteGoal = () => {
 .streak-number {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--app-text-primary);
 }
 
 .streak-label {
   font-size: 12px;
-  color: #666;
+  color: var(--app-text-secondary);
 }
 
-/* 日历视图 */
+/* 日历样式 */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  margin-bottom: 16px;
+  margin-bottom: var(--app-spacing-md);
 }
 
 .calendar-day {
@@ -606,20 +552,20 @@ const deleteGoal = () => {
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: var(--app-radius-button);
   cursor: pointer;
   transition: all 0.2s;
   background-color: #f5f5f5;
-  color: #333;
+  color: var(--app-text-primary);
 }
 
 .calendar-day.completed {
-  background-color: #18a058;
-  color: white;
+  background-color: var(--app-color-success);
+  color: var(--app-text-on-primary);
 }
 
 .calendar-day.today {
-  border: 2px solid #2080f0;
+  border: 2px solid var(--app-color-secondary);
   font-weight: 600;
 }
 
@@ -639,7 +585,7 @@ const deleteGoal = () => {
 
 .calendar-legend {
   display: flex;
-  gap: 16px;
+  gap: var(--app-spacing-md);
   justify-content: center;
 }
 
@@ -648,7 +594,7 @@ const deleteGoal = () => {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #666;
+  color: var(--app-text-secondary);
 }
 
 .legend-dot {
@@ -659,28 +605,50 @@ const deleteGoal = () => {
 }
 
 .legend-dot.completed {
-  background-color: #18a058;
+  background-color: var(--app-color-success);
 }
 
 .legend-dot.today {
-  border: 2px solid #2080f0;
+  border: 2px solid var(--app-color-secondary);
   background-color: white;
 }
 
-/* 操作按钮 */
+/* 操作按钮样式 */
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 24px;
+  gap: var(--app-spacing-sm);
 }
 
 .button-group {
   display: flex;
-  gap: 12px;
+  gap: var(--app-spacing-sm);
 }
 
 .button-group .n-button {
   flex: 1;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .goal-title {
+    font-size: 18px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .streak-number {
+    font-size: 18px;
+  }
+
+  .streak-stats {
+    gap: var(--app-spacing-md);
+  }
+
+  .calendar-legend {
+    gap: var(--app-spacing-sm);
+  }
 }
 </style>
